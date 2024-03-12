@@ -1,5 +1,6 @@
-package com.tdd.practice.membership;
+package com.tdd.practice.membership.DTO;
 
+import com.tdd.practice.membership.Enums.MembershipType;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;

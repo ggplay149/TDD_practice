@@ -1,12 +1,14 @@
 package com.tdd.practice.membership;
 
 
+import com.tdd.practice.membership.Entity.Membership;
+import com.tdd.practice.membership.Enums.MembershipType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-import java.lang.reflect.Member;
+import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -60,5 +62,32 @@ public class MembershipRepositoryTest {
         assertThat(findResult.getMembershipType()).isEqualTo(MembershipType.NAVER);
         assertThat(findResult.getPoint()).isEqualTo(10000);
 
+    }
+
+    @Test
+    @DisplayName("멤버십조회_사이즈가 0")
+    public void search_size_zero(){
+        //given
+        //when
+        List<Membership> result = membershipRepository.findAllByUserId("userId");
+        //then
+        assertThat(result.size()).isEqualTo(0);
+    }
+    @Test
+    @DisplayName("멤버십조회_사이즈가 2")
+    public void search_size_two(){
+        //given
+        final Membership naverMembership = Membership.builder()
+                .userId("userId").point(10000).membershipType(MembershipType.NAVER).build();
+        final Membership kakaoMembership = Membership.builder()
+                .userId("userId").point(10000).membershipType(MembershipType.KAKAO).build();
+
+        membershipRepository.save(naverMembership);
+        membershipRepository.save(kakaoMembership);
+
+        //when
+        List<Membership> result = membershipRepository.findAllByUserId("userId");
+        //then
+        assertThat(result.size()).isEqualTo(2);
     }
 }

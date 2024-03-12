@@ -1,5 +1,6 @@
-package com.tdd.practice.membership;
+package com.tdd.practice.membership.Entity;
 
+import com.tdd.practice.membership.Enums.MembershipType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
