@@ -1,11 +1,3 @@
-/*
- * Copyright (c) 2022 ABC-MART. All rights reserved.
- *
- * This software is the confidential and proprietary information of ABC-MART.
- * You shall not disclose such Confidential Information and shall use it
- * only in accordance wih the terms of the license agreement you entered into
- * with ABC-MART.
- */
 package com.tdd.practice.membership;
 
 import lombok.Getter;
@@ -16,6 +8,7 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum MembershipErrorResult {
     DUPLICATED_MEMBERSHIP_REGISTER(HttpStatus.BAD_REQUEST,"Duplicated Membership Register Request"),
+    UNKNOWN_EXCEPTION(HttpStatus.INTERNAL_SERVER_ERROR, "Unknown Exception"),
     ;
     private final HttpStatus httpStatus;
     private final String message;
