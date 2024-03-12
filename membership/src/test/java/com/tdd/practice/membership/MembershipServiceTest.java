@@ -16,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -95,5 +96,41 @@ public class MembershipServiceTest {
 
         //then
         assertThat(result.size()).isEqualTo(3);
+    }
+
+    @Test
+    @DisplayName("멤버십상세조회실패_존재하지않음")
+    public void searchDeatil_No_member(){
+        //given
+        doReturn(Optional.empty()).when(membershipRepository).findById(membershipId);
+        //when
+        final MembershipException result = assertThrows(MembershipException.class,()->
+                target.getMembership(membershipId,userId));
+        //then
+        assertThat(result.getErrorResult()).isEqualTo(MembershipErrorResult.MEMBERSHIP_NOT_FOUND);
+    }
+    @Test
+    @DisplayName("멤버십상세조회실패_본인이아님")
+    public void searchDeatil_Not_vailed(){
+        //given
+        doReturn(Optional.empty()).when(membershipRepository).findById(membershipId);
+        //when
+        final MembershipException result = assertThrows(MembershipException.class,()->
+                target.getMembership(membershipId,"notOwner"));
+        //then
+        assertThat(result.getErrorResult()).isEqualTo(MembershipErrorResult.MEMBERSHIP_NOT_FOUND);
+    }
+    @Test
+    @DisplayName("멤버십상세조회 성공")
+    public void searchDeatil_Success(){
+        // given
+        doReturn(Optional.of(membership())).when(membershipRepository).findById(membershipId);
+
+        // when
+        final MembershipDetailResponse result = target.getMembership(membershipId, userId);
+
+        // then
+        assertThat(result.getMembershipType()).isEqualTo(MembershipType.NAVER);
+        assertThat(result.getPoint()).isEqualTo(point);
     }
 }
