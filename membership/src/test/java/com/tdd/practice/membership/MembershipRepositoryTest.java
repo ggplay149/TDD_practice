@@ -11,7 +11,6 @@ import java.lang.reflect.Member;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @DataJpaTest //JPA Repository들에 대한 빈들을 등록하여 단위 테스트의 작성을 용이하게 함
-
 public class MembershipRepositoryTest {
 
     @Autowired
