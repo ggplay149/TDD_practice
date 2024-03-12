@@ -1,13 +1,13 @@
 package com.tdd.practice.membership;
 
-import com.tdd.practice.membership.MembershipErrorResult;
-import com.tdd.practice.membership.MembershipException;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -21,28 +21,6 @@ import java.util.stream.Collectors;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
-
-    //////////////////////////////
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(
-            final MethodArgumentNotValidException ex,
-            final HttpHeaders headers,
-            final HttpStatus status,
-            final WebRequest request) {
-
-        final List<String> errorList = ex.getBindingResult()
-                .getAllErrors()
-                .stream()
-                .map(DefaultMessageSourceResolvable::getDefaultMessage)
-                .collect(Collectors.toList());
-
-        log.warn("Invalid DTO Parameter errors : {}", errorList);
-        return this.makeErrorResponseEntity(errorList.toString());
-    }
-
-    private ResponseEntity<Object> makeErrorResponseEntity(final String errorDescription) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorResponse(HttpStatus.BAD_REQUEST.toString(), errorDescription));
-    }
 
     @ExceptionHandler({MembershipException.class})
     public ResponseEntity<ErrorResponse> handleRestApiException(final MembershipException exception) {
@@ -59,6 +37,28 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     private ResponseEntity<ErrorResponse> makeErrorResponseEntity(final MembershipErrorResult errorResult) {
         return ResponseEntity.status(errorResult.getHttpStatus())
                 .body(new ErrorResponse(errorResult.name(), errorResult.getMessage()));
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(
+            final MethodArgumentNotValidException ex,
+            final HttpHeaders headers,
+            final HttpStatusCode status,
+            final WebRequest request) {
+
+        final List<String> errorList = ex.getBindingResult()
+                .getAllErrors()
+                .stream()
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                .collect(Collectors.toList());
+
+        log.warn("Invalid DTO Parameter errors : {}", errorList);
+        return this.makeErrorResponseEntity(errorList.toString());
+    }
+
+    private ResponseEntity<Object> makeErrorResponseEntity(final String errorDescription) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(HttpStatus.BAD_REQUEST.toString(), errorDescription));
     }
 
     @Getter

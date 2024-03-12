@@ -37,6 +37,7 @@ public class MembershipControllerTest {
     @BeforeEach
     public void init() {
         mockMvc = MockMvcBuilders.standaloneSetup(target)
+                .setControllerAdvice(new GlobalExceptionHandler())
                 .build();
         gson = new Gson();
     }
