@@ -1,4 +1,4 @@
-package com.tdd.practice.membership;
+package com.tdd.practice.membership.MembershipTest;
 import com.tdd.practice.membership.Entity.Membership;
 import com.tdd.practice.membership.Enums.MembershipType;
 import com.tdd.practice.membership.Repository.MembershipRepository;

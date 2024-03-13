@@ -8,17 +8,19 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
+import static com.tdd.practice.membership.ValidationGroups.*;
+
 @Getter
 @Builder
 @RequiredArgsConstructor
 @NoArgsConstructor(force = true)
 public class MembershipRequest {
 
-    @NotNull
-    @Min(0)
+    @NotNull(groups = {MembershipAddMarker.class, MembershipAccumulateMarker.class})
+    @Min(value = 0, groups = {MembershipAddMarker.class, MembershipAccumulateMarker.class})
     private final Integer point;
 
-    @NotNull
+    @NotNull(groups = {MembershipAddMarker.class})
     private final MembershipType membershipType;
 
 }

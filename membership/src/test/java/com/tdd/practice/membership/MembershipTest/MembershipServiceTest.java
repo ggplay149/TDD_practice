@@ -1,4 +1,4 @@
-package com.tdd.practice.membership;
+package com.tdd.practice.membership.MembershipTest;
 
 import com.tdd.practice.membership.DTO.MembershipAddResponse;
 import com.tdd.practice.membership.DTO.MembershipDetailResponse;
@@ -179,5 +179,17 @@ public class MembershipServiceTest {
         //when
         //then
         target.deleteMembership(membershipId,userId);
+    }
+
+    @Test
+    @DisplayName("멤버십적립실패_존재하지않음")
+    public void fail_Point_No_Memeber(){
+        //given
+        doReturn(Optional.empty()).when(membershipRepository).findById(membershipId);
+        //when
+        final MembershipException result = assertThrows(MembershipException.class,
+                () -> target.accumulateMembershipPoint(membershipId,userId,1000));
+        //then
+        assertThat(result.getErrorResult()).isEqualTo(MembershipErrorResult.MEMBERSHIP_NOT_FOUND);
     }
 }

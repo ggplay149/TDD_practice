@@ -2,10 +2,7 @@ package com.tdd.practice.membership.Entity;
 
 import com.tdd.practice.membership.Enums.MembershipType;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -33,6 +30,7 @@ public class Membership {
 
     @Column(nullable = false)
     @ColumnDefault("0")
+    @Setter
     private Integer point;
 
     @CreationTimestamp
@@ -42,4 +40,6 @@ public class Membership {
     @UpdateTimestamp
     @Column(length = 20)
     private LocalDateTime updatedAt;
+
+
 }

@@ -1,3 +1,6 @@
 package com.tdd.practice.membership.Service;
-public class PointService {
+
+public interface PointService {
+        int caculatePoint(final int price);
 }
+

@@ -4,15 +4,17 @@ import com.tdd.practice.membership.DTO.MembershipAddResponse;
 import com.tdd.practice.membership.DTO.MembershipDetailResponse;
 import com.tdd.practice.membership.DTO.MembershipRequest;
 import com.tdd.practice.membership.Service.MembershipService;
-import jakarta.validation.Valid;
+import com.tdd.practice.membership.ValidationGroups;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 import static com.tdd.practice.membership.Constants.MembershipConstants.USER_ID_HEADER;
+import static com.tdd.practice.membership.ValidationGroups.*;
 
 
 @RestController
@@ -24,7 +26,7 @@ public class MembershipController {
     @PostMapping("/api/v1/memberships")
     public ResponseEntity<MembershipAddResponse> addMeembership(
             @RequestHeader(USER_ID_HEADER) final String userId,
-            @RequestBody @Valid final MembershipRequest membershipRequest){
+            @RequestBody @Validated(MembershipAddMarker.class) final MembershipRequest membershipRequest){
         final MembershipAddResponse membershipAddResponse = membershipService.addMembership(userId,membershipRequest.getMembershipType(),membershipRequest.getPoint());
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(membershipAddResponse);
@@ -42,6 +44,16 @@ public class MembershipController {
             @RequestHeader(USER_ID_HEADER) final String userId,
             @PathVariable final Long id){
         membershipService.deleteMembership(id,userId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/api/v1/memberships/{id}/accumulate")
+    public ResponseEntity<Void> accumulateMembershipPoint(
+            @RequestHeader(USER_ID_HEADER) final String userId,
+            @PathVariable final Long id,
+            @RequestBody @Validated(MembershipAccumulateMarker.class) final MembershipRequest membershipRequest
+    ){
+        membershipService.accumulateMembershipPoint(id,userId,membershipRequest.getPoint());
         return ResponseEntity.noContent().build();
     }
 }

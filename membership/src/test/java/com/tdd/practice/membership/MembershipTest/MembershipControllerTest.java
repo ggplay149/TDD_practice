@@ -1,4 +1,4 @@
-package com.tdd.practice.membership;
+package com.tdd.practice.membership.MembershipTest;
 
 import com.google.gson.Gson;
 import com.tdd.practice.membership.Controller.MembershipController;
@@ -259,5 +259,59 @@ public class MembershipControllerTest {
         );
         //then
         resultActions.andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("멤버십적립실패_사용자식별값이헤더에없음")
+    public void point_Fail_No_Memeber() throws Exception {
+        // given
+        final String url = "/api/v1/memberships/-1/accumulate";
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.post(url)
+                        .content(gson.toJson(membershipRequest(10000)))
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        // then
+        resultActions.andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("멤버십적립실패_포인트가음수")
+    public void point_Fail_Negative_Point() throws Exception {
+        // given
+        final String url = "/api/v1/memberships/-1/accumulate";
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.post(url)
+                        .header(USER_ID_HEADER, "12345")
+                        .content(gson.toJson(membershipRequest(-1)))
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+        // then
+        resultActions.andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("멤버십적립성공")
+    public void point_Success() throws Exception {
+        // given
+        final String url = "/api/v1/memberships/-1/accumulate";
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.post(url)
+                        .header(USER_ID_HEADER, "12345")
+                        .content(gson.toJson(membershipRequest(10000)))
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+        // then
+        resultActions.andExpect(status().isNoContent());
+    }
+    private MembershipRequest membershipRequest(final Integer point) {
+        return MembershipRequest.builder()
+                .point(point)
+                .build();
     }
 }
