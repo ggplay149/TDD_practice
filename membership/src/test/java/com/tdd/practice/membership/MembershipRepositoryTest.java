@@ -1,8 +1,7 @@
 package com.tdd.practice.membership;
-
-
 import com.tdd.practice.membership.Entity.Membership;
 import com.tdd.practice.membership.Enums.MembershipType;
+import com.tdd.practice.membership.Repository.MembershipRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,4 +89,24 @@ public class MembershipRepositoryTest {
         //then
         assertThat(result.size()).isEqualTo(2);
     }
+
+    @Test
+    @DisplayName("멤버십추가후삭제")
+    public void join_And_Delete(){
+        //given
+        final Membership naverMembership = Membership.builder()
+                .userId("userId")
+                .membershipType(MembershipType.NAVER)
+                .point(10000)
+                .build();
+
+        final Membership savedMembership = membershipRepository.save(naverMembership);
+
+        //when
+        membershipRepository.deleteById(savedMembership.getId());
+
+        //then
+    }
+
+
 }

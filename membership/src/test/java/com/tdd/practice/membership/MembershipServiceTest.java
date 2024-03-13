@@ -2,11 +2,12 @@ package com.tdd.practice.membership;
 
 import com.tdd.practice.membership.DTO.MembershipAddResponse;
 import com.tdd.practice.membership.DTO.MembershipDetailResponse;
-import com.tdd.practice.membership.DTO.MembershipResponse;
 import com.tdd.practice.membership.Entity.Membership;
 import com.tdd.practice.membership.Enums.MembershipType;
 import com.tdd.practice.membership.Exception.MembershipErrorResult;
 import com.tdd.practice.membership.Exception.MembershipException;
+import com.tdd.practice.membership.Repository.MembershipRepository;
+import com.tdd.practice.membership.Service.MembershipService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,6 +36,15 @@ public class MembershipServiceTest {
     private final MembershipType membershipType = MembershipType.NAVER;
     private final Integer point = 10000;
     private final Long membershipId = -1L;
+
+    private Membership membership() {
+        return Membership.builder()
+                .id(-1L)
+                .userId(userId)
+                .point(point)
+                .membershipType(membershipType.NAVER)
+                .build();
+    }
 
     @Test
     @DisplayName("멤버쉽등록 실패_중복")
@@ -71,14 +81,7 @@ public class MembershipServiceTest {
         verify(membershipRepository,times(1)).save(any(Membership.class));
     }
 
-    private Membership membership() {
-        return Membership.builder()
-                .id(-1L)
-                .userId(userId)
-                .point(point)
-                .membershipType(membershipType.NAVER)
-                .build();
-    }
+
 
     @Test
     @DisplayName("멤버십목록조회")
@@ -132,5 +135,49 @@ public class MembershipServiceTest {
         // then
         assertThat(result.getMembershipType()).isEqualTo(MembershipType.NAVER);
         assertThat(result.getPoint()).isEqualTo(point);
+    }
+
+//    @Test
+//    @DisplayName("멤버십상세조회실패_존재하지않음")
+//    public void searchDeatil_No_member(){
+//        //given
+//        doReturn(Optional.empty()).when(membershipRepository).findById(membershipId);
+//        //when
+//        final MembershipException result = assertThrows(MembershipException.class,()->
+//                target.getMembership(membershipId,userId));
+//        //then
+//        assertThat(result.getErrorResult()).isEqualTo(MembershipErrorResult.MEMBERSHIP_NOT_FOUND);
+//    }
+
+    @Test
+    @DisplayName("멤버십삭제실패_존재하지않음")
+    public void deleteFail_No_member(){
+        //given
+        doReturn(Optional.empty()).when(membershipRepository).findById(membershipId);
+        //when
+        final MembershipException result = assertThrows(MembershipException.class,() -> target.deleteMembership(membershipId,userId));
+        //then
+        assertThat(result.getErrorResult()).isEqualTo(MembershipErrorResult.MEMBERSHIP_NOT_FOUND);
+    }
+
+    @Test
+    @DisplayName("멤버십삭제실패_본인이아님")
+    public void deleteFail_Not_valid(){
+        //given
+        doReturn(Optional.of(membership())).when(membershipRepository).findById(membershipId);
+        //when
+        final MembershipException result = assertThrows(MembershipException.class,()-> target.deleteMembership(membershipId,"wrongID"));
+        //then
+        assertThat(result.getErrorResult()).isEqualTo(MembershipErrorResult.NOT_MEMBERSHIP_OWNER);
+    }
+
+    @Test
+    @DisplayName("멤버십삭제성공")
+    public void delete_Success(){
+        //given
+        doReturn(Optional.of(membership())).when(membershipRepository).findById(membershipId);
+        //when
+        //then
+        target.deleteMembership(membershipId,userId);
     }
 }

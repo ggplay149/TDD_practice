@@ -1,6 +1,7 @@
 package com.tdd.practice.membership;
 
 import com.google.gson.Gson;
+import com.tdd.practice.membership.Controller.MembershipController;
 import com.tdd.practice.membership.DTO.MembershipAddResponse;
 import com.tdd.practice.membership.DTO.MembershipDetailResponse;
 import com.tdd.practice.membership.Exception.GlobalExceptionHandler;
@@ -9,6 +10,7 @@ import com.tdd.practice.membership.DTO.MembershipResponse;
 import com.tdd.practice.membership.Enums.MembershipType;
 import com.tdd.practice.membership.Exception.MembershipErrorResult;
 import com.tdd.practice.membership.Exception.MembershipException;
+import com.tdd.practice.membership.Service.MembershipService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -244,5 +246,18 @@ public class MembershipControllerTest {
             );
         //then
         resultActions.andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("멤버십삭제실패_사용자식별값이헤더에없음")
+    public void delete_Fail_no_valid() throws Exception{
+        //given
+        final String url = "/api/v1/memberships/delete";
+        //when
+        final ResultActions resultActions = mockMvc.perform(
+          MockMvcRequestBuilders.delete(url)
+        );
+        //then
+        resultActions.andExpect(status().isBadRequest());
     }
 }

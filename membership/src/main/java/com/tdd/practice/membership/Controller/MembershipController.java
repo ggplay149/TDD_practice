@@ -1,10 +1,9 @@
-package com.tdd.practice.membership;
+package com.tdd.practice.membership.Controller;
 
 import com.tdd.practice.membership.DTO.MembershipAddResponse;
 import com.tdd.practice.membership.DTO.MembershipDetailResponse;
 import com.tdd.practice.membership.DTO.MembershipRequest;
-import com.tdd.practice.membership.DTO.MembershipResponse;
-import com.tdd.practice.membership.Entity.Membership;
+import com.tdd.practice.membership.Service.MembershipService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -36,5 +35,13 @@ public class MembershipController {
     public ResponseEntity<List<MembershipDetailResponse>> getMebershipList(
             @RequestHeader(USER_ID_HEADER) final String userId){
         return ResponseEntity.ok(membershipService.getMembershipList(userId));
+    }
+
+    @DeleteMapping("/api/v1/memberships/delete")
+    public ResponseEntity<List<MembershipDetailResponse>> deleteMemebership(
+            @RequestHeader(USER_ID_HEADER) final String userId,
+            @PathVariable final Long id){
+        membershipService.deleteMembership(id,userId);
+        return ResponseEntity.noContent().build();
     }
 }

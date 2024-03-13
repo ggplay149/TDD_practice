@@ -1,4 +1,4 @@
-package com.tdd.practice.membership;
+package com.tdd.practice.membership.Service;
 
 import com.tdd.practice.membership.DTO.MembershipAddResponse;
 import com.tdd.practice.membership.DTO.MembershipDetailResponse;
@@ -6,6 +6,7 @@ import com.tdd.practice.membership.Entity.Membership;
 import com.tdd.practice.membership.Enums.MembershipType;
 import com.tdd.practice.membership.Exception.MembershipErrorResult;
 import com.tdd.practice.membership.Exception.MembershipException;
+import com.tdd.practice.membership.Repository.MembershipRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -64,5 +65,14 @@ public class MembershipService {
                 .point(membership.getPoint())
                 .createdAt(membership.getCreatedAt())
                 .build();
+    }
+
+    public void deleteMembership(Long membershipId, String userId) {
+        final Optional<Membership> optionalMembership = membershipRepository.findById(membershipId);
+        final Membership membership = optionalMembership.orElseThrow(()-> new MembershipException(MembershipErrorResult.MEMBERSHIP_NOT_FOUND));
+        if(!membership.getUserId().equals(userId)){
+            throw new MembershipException(MembershipErrorResult.NOT_MEMBERSHIP_OWNER);
+        }
+        membershipRepository.deleteById(membershipId);
     }
 }
