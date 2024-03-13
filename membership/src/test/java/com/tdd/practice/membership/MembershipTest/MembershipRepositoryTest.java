@@ -108,5 +108,23 @@ public class MembershipRepositoryTest {
         //then
     }
 
+    /*
+    *
+    * 유저 정보 업데이트 기능 추가
+    *
+     */
+
+    @Test
+    @DisplayName("멤버정보 업데이트")
+    public void update_MemberInfo(){
+        //given
+        final Membership updatedMember = Membership
+                .builder()
+                .userid()
+                .build();
+        //then
+        //when
+
+    }
 
 }
