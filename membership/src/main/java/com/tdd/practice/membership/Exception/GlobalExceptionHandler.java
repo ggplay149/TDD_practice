@@ -44,6 +44,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
             final MethodArgumentNotValidException ex,
             final HttpHeaders headers,
+            //final HttpStatus status,
             final HttpStatusCode status,
             final WebRequest request) {
 

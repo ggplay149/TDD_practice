@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class) //개발자가 동작을 직접 제어할수있는 가짜 객체 지원 테스트 프레임워크
@@ -246,7 +246,7 @@ public class MembershipServiceTest {
 
     @Test
     @DisplayName("업데이트성공")
-    public void fail_Update_success(){
+    public void fail_Update_success() throws Exception {
 
         //given
         final Membership newMembershipInfo = Membership.builder()
@@ -259,8 +259,16 @@ public class MembershipServiceTest {
         doReturn(Optional.of(membership())).when(membershipRepository).findById(membershipId);
         //중복검사용 리턴
         doReturn(null).when(membershipRepository).findByUserId(newMembershipInfo.getUserId());
+
         //when
-        //then
         target.updateMembership(membershipId,userId,newMembershipInfo);
+
+        //then
+        Optional<Membership> updatedMembershipTemp = membershipRepository.findById(membershipId);
+        Membership updatedMembership = updatedMembershipTemp.orElseThrow(()-> new Exception());
+        assertEquals("newUserId", updatedMembership.getUserId());
+        assertEquals(77777, updatedMembership.getPoint());
+        assertEquals(MembershipType.LINE, updatedMembership.getMembershipType());
+
     }
 }
