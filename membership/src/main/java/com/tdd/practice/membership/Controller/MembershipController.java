@@ -3,8 +3,10 @@ package com.tdd.practice.membership.Controller;
 import com.tdd.practice.membership.DTO.MembershipAddResponse;
 import com.tdd.practice.membership.DTO.MembershipDetailResponse;
 import com.tdd.practice.membership.DTO.MembershipRequest;
+import com.tdd.practice.membership.Entity.Membership;
 import com.tdd.practice.membership.Service.MembershipService;
 import com.tdd.practice.membership.ValidationGroups;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -54,6 +56,19 @@ public class MembershipController {
             @RequestBody @Validated(MembershipAccumulateMarker.class) final MembershipRequest membershipRequest
     ){
         membershipService.accumulateMembershipPoint(id,userId,membershipRequest.getPoint());
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/api/v1/memberships/{id}/update")
+    public ResponseEntity<Void> updateMembershipInf(
+            @RequestHeader(USER_ID_HEADER) final String userId,
+            @PathVariable final Long id,
+            @RequestBody @Validated(MembershipUpdateMarker.class) final MembershipRequest membershipRequest
+    ){
+        Membership new_Membership_Info = Membership.builder()
+                        .userId(membershipRequest.getUserId()).build();
+
+        membershipService.updateMembership(id,userId,new_Membership_Info);
         return ResponseEntity.noContent().build();
     }
 }

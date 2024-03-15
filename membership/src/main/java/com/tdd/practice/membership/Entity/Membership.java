@@ -23,9 +23,11 @@ public class Membership {
     private Long  id;
 
    @Enumerated(EnumType.STRING)
+   @Setter
    private MembershipType membershipType;
 
     @Column(nullable = false, length = 20)
+    @Setter
     private String userId;
 
     @Column(nullable = false)

@@ -4,7 +4,7 @@ import com.tdd.practice.membership.DTO.MembershipAddResponse;
 import com.tdd.practice.membership.DTO.MembershipDetailResponse;
 import com.tdd.practice.membership.Entity.Membership;
 import com.tdd.practice.membership.Enums.MembershipType;
-import com.tdd.practice.membership.Exception.MembershipErrorResult;
+import com.tdd.practice.membership.Enums.MembershipErrorResult;
 import com.tdd.practice.membership.Exception.MembershipException;
 import com.tdd.practice.membership.Repository.MembershipRepository;
 import com.tdd.practice.membership.Service.MembershipService;
@@ -191,5 +191,76 @@ public class MembershipServiceTest {
                 () -> target.accumulateMembershipPoint(membershipId,userId,1000));
         //then
         assertThat(result.getErrorResult()).isEqualTo(MembershipErrorResult.MEMBERSHIP_NOT_FOUND);
+    }
+
+    /*
+     *
+     * 유저 정보 업데이트 기능 추가
+     *
+     */
+    @Test
+    @DisplayName("업데이트실패_해당유저없음")
+    public void fail_Update_No_Memeber(){
+        //given
+        doReturn(Optional.empty()).when(membershipRepository).findById(membershipId);
+        final Membership newMembershipInfo = Membership.builder().build();
+        //when
+        final MembershipException result = assertThrows(MembershipException.class, ()->target.updateMembership(membershipId,userId,newMembershipInfo));
+        //then
+        assertThat(result.getErrorResult()).isEqualTo(MembershipErrorResult.MEMBERSHIP_NOT_FOUND);
+    }
+
+    @Test
+    @DisplayName("업데이트실패_권한없음")
+    public void fail_Update_Not_valid(){
+        //given
+        doReturn(Optional.of(membership())).when(membershipRepository).findById(membershipId);
+        final Membership newMembershipInfo = Membership.builder().build();
+        //when
+        final MembershipException result = assertThrows(MembershipException.class, ()->target.updateMembership(membershipId,"wrongId",newMembershipInfo));
+        //then
+        assertThat(result.getErrorResult()).isEqualTo(MembershipErrorResult.NOT_MEMBERSHIP_OWNER);
+
+    }
+    @Test
+    @DisplayName("업데이트실패_업데이트하려고하는 유저아이디중복")
+    public void fail_Update_duplicated(){
+
+        //given
+        final Membership newMembershipInfo = Membership.builder()
+                .userId("newUserId")
+                .build();
+
+        //계정 본인확인용 리턴
+        doReturn(Optional.of(membership())).when(membershipRepository).findById(membershipId);
+        //중복검사용 리턴
+        doReturn(Membership.builder().build()).when(membershipRepository).findByUserId(newMembershipInfo.getUserId());
+
+        //when
+        final MembershipException result = assertThrows(MembershipException.class, ()->target.updateMembership(membershipId,userId,newMembershipInfo));
+
+        //then
+        assertThat(result.getErrorResult()).isEqualTo(MembershipErrorResult.DUPLICATED_MEMBERSHIP_REGISTER);
+
+    }
+
+    @Test
+    @DisplayName("업데이트성공")
+    public void fail_Update_success(){
+
+        //given
+        final Membership newMembershipInfo = Membership.builder()
+                .userId("newUserId") // 기존 userId
+                .point(77777) //기존
+                .membershipType(MembershipType.LINE)
+                .build();
+
+        //계정 본인확인용 리턴
+        doReturn(Optional.of(membership())).when(membershipRepository).findById(membershipId);
+        //중복검사용 리턴
+        doReturn(null).when(membershipRepository).findByUserId(newMembershipInfo.getUserId());
+        //when
+        //then
+        target.updateMembership(membershipId,userId,newMembershipInfo);
     }
 }

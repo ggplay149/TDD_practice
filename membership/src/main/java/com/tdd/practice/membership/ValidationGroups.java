@@ -11,5 +11,8 @@ public final class ValidationGroups {
     public interface MembershipAccumulateMarker {
 
     }
+    public interface MembershipUpdateMarker{
+
+    }
 
 }

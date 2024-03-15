@@ -8,7 +8,7 @@ import com.tdd.practice.membership.Exception.GlobalExceptionHandler;
 import com.tdd.practice.membership.DTO.MembershipRequest;
 import com.tdd.practice.membership.DTO.MembershipResponse;
 import com.tdd.practice.membership.Enums.MembershipType;
-import com.tdd.practice.membership.Exception.MembershipErrorResult;
+import com.tdd.practice.membership.Enums.MembershipErrorResult;
 import com.tdd.practice.membership.Exception.MembershipException;
 import com.tdd.practice.membership.Service.MembershipService;
 import org.junit.jupiter.api.BeforeEach;
@@ -313,5 +313,61 @@ public class MembershipControllerTest {
         return MembershipRequest.builder()
                 .point(point)
                 .build();
+    }
+
+    /*
+     *
+     * 유저 정보 업데이트 기능 추가
+     *
+     */
+    @Test
+    @DisplayName("멤버십업데이트실패_사용자식별값이헤더에없음")
+    public void update_fail_No_Memeber() throws Exception {
+        //given
+        final String url = "/api/v1/memberships/-1/update";
+        //when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.put(url)
+                        .content(gson.toJson(membershipRequest(10000)))
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+        //then
+        resultActions.andExpect(status().isBadRequest());
+    }
+    @Test
+    @DisplayName("멤버십업데이트실패_유저아이디가 20자 이상")
+    public void update_fail_tooLong_UserId() throws Exception {
+        final String url = "/api/v1/memberships/-1/update";
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.put(url)
+                        .header(USER_ID_HEADER, "12345")
+                        .content(gson.toJson(updateMembershipRequest("TESTTESTTESTTESTTEST",22222,MembershipType.KAKAO)))
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+        // then
+        resultActions.andExpect(status().isBadRequest());
+    }
+    private MembershipRequest updateMembershipRequest(final String newId, final Integer point, final MembershipType membershipType) {
+        return MembershipRequest.builder()
+                .userId(newId)
+                .point(point)
+                .membershipType(membershipType)
+                .build();
+    }
+
+    @Test
+    @DisplayName("멤버십업데이트성공")
+    public void update_success() throws Exception{
+        //given
+        final String url = "/api/v1/memberships/-1/update";
+        //when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.put(url)
+                        .header(USER_ID_HEADER, "12345")
+                        .content(gson.toJson(updateMembershipRequest("newUserId",6666,MembershipType.LINE)))
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+        //then
+        resultActions.andExpect(status().isNoContent());
     }
 }

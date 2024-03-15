@@ -1,8 +1,7 @@
 package com.tdd.practice.membership.Exception;
 
 
-import com.tdd.practice.membership.Exception.MembershipErrorResult;
-import com.tdd.practice.membership.Exception.MembershipException;
+import com.tdd.practice.membership.Enums.MembershipErrorResult;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

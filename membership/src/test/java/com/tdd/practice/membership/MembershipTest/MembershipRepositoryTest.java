@@ -2,11 +2,14 @@ package com.tdd.practice.membership.MembershipTest;
 import com.tdd.practice.membership.Entity.Membership;
 import com.tdd.practice.membership.Enums.MembershipType;
 import com.tdd.practice.membership.Repository.MembershipRepository;
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
+import javax.swing.text.html.parser.Entity;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -16,6 +19,9 @@ public class MembershipRepositoryTest {
 
     @Autowired
     private MembershipRepository membershipRepository ;
+
+    @Mock
+    private EntityManager em;
 
 //    @Test
 //    @DisplayName("MembershipRepository 유무확인")
@@ -117,14 +123,24 @@ public class MembershipRepositoryTest {
     @Test
     @DisplayName("멤버정보 업데이트")
     public void update_MemberInfo(){
+
         //given
-        final Membership updatedMember = Membership
-                .builder()
-                .userid()
+        Membership newMember = Membership.builder()
+                .userId("userId")
+                .membershipType(MembershipType.NAVER)
+                .point(1111)
                 .build();
-        //then
+
+        membershipRepository.save(newMember);
+
         //when
+        Membership updatedMember = membershipRepository.findByUserId("userId");
+        updatedMember.setMembershipType(MembershipType.KAKAO);
+        updatedMember.setPoint(7777);
 
+        //then
+        final Membership afterUpdate = membershipRepository.findByUserId("userId");
+        assertThat(afterUpdate.getMembershipType()).isEqualTo(MembershipType.KAKAO);
+        assertThat(afterUpdate.getPoint()).isEqualTo(7777);
     }
-
 }
